@@ -1,0 +1,207 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "mount_file_id": "1-kg6bdmpbVe1lVN__sR2XjIywwWhEREW",
+      "authorship_tag": "ABX9TyM4672eLkBvhlElIa6JN+km",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/krittika0608/ai-study-assistent/blob/main/ai%20study\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 25,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3rXd_aio7y7R",
+        "outputId": "ff430fae-a4f5-44bd-a6ed-648844f5a249"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Total sentences: 8\n",
+            "['Machine learning is a subset of artificial intelligence that enables systems to learn from data', 'Supervised learning uses labeled data to train models and make predictions', 'Unsupervised learning finds hidden patterns in data without labeled outputs', 'Deep learning uses neural networks with multiple layers to process complex data', 'Natural language processing helps computers understand and generate human language', 'A neural network is inspired by the structure of the human brain', 'Data preprocessing is an important step before training any machine learning model', 'Overfitting happens when a model learns the training data too well but fails on new data']\n"
+          ]
+        }
+      ],
+      "source": [
+        "import numpy as np\n",
+        "import re\n",
+        "\n",
+        "notes_text = \"\"\"\n",
+        "Machine learning is a subset of artificial intelligence that enables systems to learn from data.\n",
+        "Supervised learning uses labeled data to train models and make predictions.\n",
+        "Unsupervised learning finds hidden patterns in data without labeled outputs.\n",
+        "Deep learning uses neural networks with multiple layers to process complex data.\n",
+        "Natural language processing helps computers understand and generate human language.\n",
+        "A neural network is inspired by the structure of the human brain.\n",
+        "Data preprocessing is an important step before training any machine learning model.\n",
+        "Overfitting happens when a model learns the training data too well but fails on new data.\n",
+        "\"\"\"\n",
+        "\n",
+        "sentences = [s.strip() for s in re.split(r'[.\\n]', notes_text) if len(s.strip()) > 10]\n",
+        "print(f\"Total sentences: {len(sentences)}\")\n",
+        "print(sentences)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def build_vocabulary(sentences):\n",
+        "    vocab = set()\n",
+        "    for s in sentences:\n",
+        "        words = re.findall(r'\\b[a-z]+\\b', s.lower())\n",
+        "        vocab.update(words)\n",
+        "    return sorted(list(vocab))\n",
+        "\n",
+        "vocab = build_vocabulary(sentences)\n",
+        "word_index = {word: i for i, word in enumerate(vocab)}\n",
+        "print(f\"Vocabulary size: {len(vocab)}\")\n",
+        "print(vocab)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v1J-t0uP8Mky",
+        "outputId": "59520eb4-227e-479c-d5f8-3fc2d6d2221c"
+      },
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Vocabulary size: 70\n",
+            "['a', 'an', 'and', 'any', 'artificial', 'before', 'brain', 'but', 'by', 'complex', 'computers', 'data', 'deep', 'enables', 'fails', 'finds', 'from', 'generate', 'happens', 'helps', 'hidden', 'human', 'important', 'in', 'inspired', 'intelligence', 'is', 'labeled', 'language', 'layers', 'learn', 'learning', 'learns', 'machine', 'make', 'model', 'models', 'multiple', 'natural', 'network', 'networks', 'neural', 'new', 'of', 'on', 'outputs', 'overfitting', 'patterns', 'predictions', 'preprocessing', 'process', 'processing', 'step', 'structure', 'subset', 'supervised', 'systems', 'that', 'the', 'to', 'too', 'train', 'training', 'understand', 'unsupervised', 'uses', 'well', 'when', 'with', 'without']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def sentence_to_vector(sentence, word_index):\n",
+        "    vec = np.zeros(len(word_index))\n",
+        "    words = re.findall(r'\\b[a-z]+\\b', sentence.lower())\n",
+        "    for w in words:\n",
+        "        if w in word_index:\n",
+        "            vec[word_index[w]] += 1\n",
+        "    return vec\n",
+        "\n",
+        "sentence_vectors = np.array([sentence_to_vector(s, word_index) for s in sentences])\n",
+        "print(\"Sentence vector matrix shape:\", sentence_vectors.shape)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "PuT7nWN28uLT",
+        "outputId": "58d4e4c4-7eeb-468c-b300-4d8f04040963"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Sentence vector matrix shape: (8, 70)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def cosine_similarity_manual(vec1, vec2):\n",
+        "    dot_product = np.dot(vec1, vec2)\n",
+        "    norm1 = np.linalg.norm(vec1)\n",
+        "    norm2 = np.linalg.norm(vec2)\n",
+        "    if norm1 == 0 or norm2 == 0:\n",
+        "        return 0\n",
+        "    return dot_product / (norm1 * norm2)\n",
+        "\n",
+        "print(\"Cosine similarity function ready\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Jel3Lx4N8zeh",
+        "outputId": "0c8bb26c-d6f4-427e-eb93-e68dd7135fc1"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Cosine similarity function ready\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def find_most_relevant_sentence(question, sentences, sentence_vectors, word_index):\n",
+        "    question_vec = sentence_to_vector(question, word_index)\n",
+        "    similarities = np.array([\n",
+        "        cosine_similarity_manual(question_vec, sentence_vectors[i])\n",
+        "        for i in range(len(sentences))\n",
+        "    ])\n",
+        "    best_idx = np.argmax(similarities)\n",
+        "    return sentences[best_idx], similarities[best_idx]\n",
+        "\n",
+        "question = \"what is deep learning\"\n",
+        "answer, score = find_most_relevant_sentence(question, sentences, sentence_vectors, word_index)\n",
+        "\n",
+        "print(f\"Question: {question}\")\n",
+        "print(f\"Answer: {answer}\")\n",
+        "print(f\"Confidence score: {score:.3f}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "6Vjsuiu-895B",
+        "outputId": "fa5df6f7-315f-4122-c963-f6a5090236f9"
+      },
+      "execution_count": 29,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Question: what is deep learning\n",
+            "Answer: Deep learning uses neural networks with multiple layers to process complex data\n",
+            "Confidence score: 0.333\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
